@@ -8,7 +8,7 @@ A simple Bash script to **list AWS resources** for a given service and region. T
 
 **Vaibhav Umbarkar**  
 Created: 20/09/2025  
-Version: v1
+Version: v1.0
 
 ---
 

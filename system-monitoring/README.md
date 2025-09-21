@@ -7,7 +7,7 @@ A simple Bash script to monitor your system's resources including memory, disk, 
 ## Author
 
 **Vaibhav Umbarkar**  
-Version: 1.0  
+Version: v1.0  
 
 ---
 

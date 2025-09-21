@@ -7,7 +7,7 @@ A simple Bash script to parse log files and provide summarized statistics includ
 ## Author
 
 **Vaibhav Umbarkar**  
-Version: 1.0  
+Version: v1.0  
 
 ---
 
