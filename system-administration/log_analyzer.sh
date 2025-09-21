@@ -53,7 +53,7 @@ show_error_per_day(){
         echo "4. Errors per day:"
         grep -i "error" "$LOGFILE" | awk '{print $1}' | sort | uniq -c | sort -nr
     else
-        echo "Log dose not have standart date YYYY-MM-DD"
+        echo "Log dose not have standard date YYYY-MM-DD"
     fi
 }
 
