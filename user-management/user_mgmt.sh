@@ -1,7 +1,11 @@
-#!/usr/bin/env bash
-# user_mgmt.sh - Simple User Management Automation
-# Author: Vaibhav
-# Run as root (sudo)
+#!/bin/bash
+
+###########################################################
+# Author: Vaibhav Umbarkar
+# Version: v1.0
+# Description: Simple User Management Automation
+###########################################################
+
 
 set -euo pipefail
 
