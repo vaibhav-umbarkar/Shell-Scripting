@@ -1,122 +1,293 @@
 #!/bin/bash
 
-###########################################################
+#####################################################################################################
 # Author: Vaibhav Umbarkar
 # Version: v1.0
-# Description: Simple User Management Automation
-###########################################################
+# Description: Simple script for create user, group, delete user & group, add/remove user from group
+#####################################################################################################
 
 
-set -euo pipefail
-
-PROG="$(basename "$0")"
-
-usage() {
-  cat <<EOF
-Usage: $PROG [command] [options]
-
-Commands:
-  add     -u USER [-g GROUP] [-s SHELL] [-h]   Create a new user
-  del     -u USER [-r]                         Delete a user (-r remove home)
-  passwd  -u USER                              Set/reset user password
-  lock    -u USER                              Lock user account
-  unlock  -u USER                              Unlock user account
-  groups  -u USER -g GROUPS                    Add user to groups (comma sep)
-  info    -u USER                              Show user info
-  help                                         Show this help
-
-Examples:
-  $PROG add -u alice -g developers -s /bin/bash
-  $PROG del -u alice -r
-  $PROG passwd -u alice
-  $PROG groups -u alice -g sudo,docker
-EOF
-  exit 1
+# Function to check if the script is run as root
+check_root(){
+    if [[ $EUID -ne 0 ]]
+    then
+        echo "This script must be run as root/sudo"
+        exit 1
+    fi
 }
 
-require_root() {
-  if [[ $EUID -ne 0 ]]; then
-    echo "❌ Must run as root (use sudo)." >&2
+# Function to display usage instructions
+show_usage(){
+    echo "Usage: sudo $0 <action> [options]"
+    echo ""
+    echo "Actions:"
+    echo "  add -u <username>         : Create a new user"
+    echo "  del -u <username>         : Delete an existing user"
+    echo "  addgroup -g <groupname>   : Create a new group"
+    echo "  delgroup -g <groupname>   : Delete an existing group"
+    echo "  usr_add_grp -u <username> -g <group> : Add a user to a group"
+    echo "  usr_delete_grp -u <username> -g <group> : Remove a user from a group"
+    echo ""
     exit 1
-  fi
 }
 
-# ---- Parse Subcommands ----
-cmd="${1:-}"
-shift || true
-
-[[ -z "$cmd" ]] && usage
-
-USER=""
-GROUPS=""
-SHELL="/bin/bash"
-REMOVE_HOME=0
-
-while getopts "u:g:s:r" opt; do
-  case $opt in
-    u) USER="$OPTARG" ;;
-    g) GROUPS="$OPTARG" ;;
-    s) SHELL="$OPTARG" ;;
-    r) REMOVE_HOME=1 ;;
-    *) usage ;;
-  esac
-done
-
-require_root
-
-case "$cmd" in
-  add)
-    if id "$USER" &>/dev/null; then
-      echo "⚠️ User '$USER' already exists."
-      exit 1
+# Function to create a new user
+create_user(){
+    local username=$1
+    if id "$usename" &>/dev/null
+    then
+        echo "Error: User '$username' already exists."
+        exit 1
     fi
-    if [[ -n "$GROUPS" ]]; then
-      groupadd -f "$GROUPS"
-      useradd -m -s "$SHELL" -G "$GROUPS" "$USER"
+    
+    # Command for create new user with default bash shell env
+    useradd -m "$username" -s /bin/bash
+    if [[ $? -eq 0 ]]
+    then
+        echo "User '$username' created successfully"
     else
-      useradd -m -s "$SHELL" "$USER"
+        echo "Error: Failed to create user '$username'!"
+        exit 1
     fi
-    echo "✅ User '$USER' created."
-    ;;
-  del)
-    if ! id "$USER" &>/dev/null; then
-      echo "⚠️ User '$USER' does not exist."
-      exit 1
+}
+
+# Function for delete an existing user
+delete_user(){
+    local username=$1
+    if ! id "$username" &>/dev/null
+    then
+        echo "Error: User '$username' does not exist"
+        exit 1
     fi
-    if (( REMOVE_HOME )); then
-      userdel -r "$USER"
-      echo "🗑 User '$USER' and home directory deleted."
+
+    # Command for delete existing user and its home dir
+    userdel -r "$username"
+    if [[ $? -eq 0 ]]
+    then
+        echo "User '$username' and home dir deleted successfully"
     else
-      userdel "$USER"
-      echo "🗑 User '$USER' deleted (home preserved)."
+        echo "Error: Failed to delete user '$username'!"
+        exit 1
     fi
-    ;;
-  passwd)
-    if ! id "$USER" &>/dev/null; then
-      echo "⚠️ User '$USER' does not exist."
-      exit 1
+}
+
+# Fucntion for create new group
+create_group(){
+    local groupname=$1
+    if getent group "$groupname" &>/dev/null
+    then
+        echo "Error: Group '$groupname' already exist"
+        exit 1
     fi
-    passwd "$USER"
-    ;;
-  lock)
-    passwd -l "$USER" && echo "🔒 User '$USER' locked."
-    ;;
-  unlock)
-    passwd -u "$USER" && echo "🔓 User '$USER' unlocked."
-    ;;
-  groups)
-    if [[ -z "$GROUPS" ]]; then
-      echo "❌ Groups required with -g" >&2
-      exit 1
+
+    # Command for create new group
+    groupadd "$groupname"
+    if [[ $? -eq 0 ]]
+    then
+        echo "Group '$groupname' created successfully"
+    else
+        echo "Error: Failed to create '$groupname' Group!"
+        exit 1
     fi
-    usermod -aG "$GROUPS" "$USER"
-    echo "✅ User '$USER' added to groups: $GROUPS"
-    ;;
-  info)
-    id "$USER"
-    getent passwd "$USER"
-    ;;
-  help|*)
-    usage
-    ;;
+}
+
+# Function for delete existing group
+del_group(){
+    local groupname=$1
+    if ! getent group "$groupname" &>/dev/null
+    then
+        echo "Error: Group '$groupname' does not exist!"
+        exit 1
+    fi
+
+    # Command for delete group
+    groupdel "$groupname"
+    if [[ $? -eq 0 ]]
+    then
+        echo "Group '$groupname' deleted successfully"
+    else
+        echo "Error: Failed to delete '$groupname' Group!"
+        exit 1
+    fi
+}
+
+# Function for add user to group
+add_user_to_group(){
+    local username=$1
+    local groupname=$2
+    if ! id "$username" &>/dev/null
+    then
+        echo "Error: User '$username' does not exist!"
+        exit 1
+    fi
+
+    if ! getent group "$groupname" &>/dev/null
+    then
+        echo "Error: Group '$groupname' does not exist!"
+        exit 1
+    fi
+
+    # Command for add user to group
+    usermod -aG "$groupname" "$username"
+    if [[ $? -eq 0 ]]
+    then
+        echo "User '$username' added in group '$groupname' successefully"
+    else
+        echo "Error: Failed to add user '$username' to group '$groupname'!"
+        exit 1
+    fi
+}
+
+# Function for delete user from group
+del_user_from_group(){
+    local username=$1
+    local groupname=$2
+    if ! id "$username" &>/dev/null
+    then
+        echo "Error: User '$username' dose not exist!"
+        exit 1
+    fi
+    if ! getent group "$groupname" &>/dev/null
+    then
+        echo "Error: Group '$groupname' does not exist!"
+        exit 1
+    fi
+
+    # Cammand for delete user from group
+    gpasswd -d "$username" "$groupname"
+    if [[ $? -eq 0 ]]
+    then
+        echo "User '$username' removed from group '$groupname' successfully"
+    else
+        echo "Error: Failed to remove user '$username' from group '$groupname'!"
+        exit 1
+    fi
+}
+
+# Check if at least one argument is provided by user
+if [[ $# -eq 0 ]]
+then
+    show_usage
+fi
+
+action=$1
+shift
+
+case "$action" in
+    add)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -u)
+                    username=$2
+                    shift 2
+                    create_user "$username"
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        ;;
+    
+    del)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -u)
+                    username=$2
+                    shift 2
+                    delete_user "$username"
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        ;;
+
+    addgroup)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -g)
+                    groupname=$2
+                    shift 2
+                    create_group "$groupname"
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        ;;
+
+    delgroup)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -g)
+                    groupname=$2
+                    shift 2
+                    del_group "$groupname"
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        ;;
+
+    usr_add_grp)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -u)
+                    username=$2
+                    shift 2
+                    ;;
+                -g)
+                    groupname=$2
+                    shift 2
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        if [[ -n "$username" && -n "$groupname" ]]
+        then
+            add_user_to_group "$username" "$groupname"
+        else
+            show_usage
+        fi
+        ;;
+
+    usr_delete_grp)
+        while [[ $# -gt 0 ]]
+        do
+            case "$1" in
+                -u)
+                    username=$2
+                    shift 2
+                    ;;
+                -g)
+                    groupname=$2
+                    shift 2
+                    ;;
+                *)
+                    show_usage
+                    ;;
+            esac
+        done
+        if [[ -n "$username" && -n "$groupname" ]]
+        then
+            del_user_from_group "$username" "$groupname"
+        else
+            show_usage
+        fi
+        ;;
+    *)
+        show_usage
+        ;;
 esac

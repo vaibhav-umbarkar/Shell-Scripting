@@ -1,6 +1,6 @@
-# User Management Script
+# User & Group Management Script
 
-A simple Bash script to automate user management tasks such as creating, deleting, and modifying users and their permissions.
+A simple Bash script to manage local Linux users and groups — create/delete users and groups, and add/remove users from groups.
 
 ---
 
@@ -13,62 +13,87 @@ Version: v1.0
 
 ## Description
 
-`user_mgmt.sh` allows system administrators to perform common user management operations with ease:
+This script (`user_mgmt.sh`) provides straightforward commands to perform common user/group administration tasks from the terminal:
 
-* Create new users with optional group and shell assignment
-* Delete users (with or without their home directories)
-* Reset user passwords
-* Lock and unlock accounts
-* Add users to one or more groups
-* View detailed user information
+* Create a new user (with home directory and default `/bin/bash` shell)
+* Delete a user and their home directory
+* Create and delete groups
+* Add a user to a group
+* Remove a user from a group
 
-This script is useful for administrators who want a quick and reliable way to manage user accounts directly from the terminal.
+The script is intended for system administrators and should be run with root privileges.
 
 ---
 
 ## Usage
 
 ```bash
-sudo ./user_mgmt.sh [command] [options]
+sudo ./user_mgmt.sh <action> [options]
 ```
 
-### Commands
+### Actions & Options
 
-* **add**: Create a new user
-* **del**: Delete a user
-* **passwd**: Set or reset user password
-* **lock**: Lock a user account
-* **unlock**: Unlock a user account
-* **groups**: Add user to groups
-* **info**: Show user info
+* `add -u <username>`
 
-### Examples
+  * Create a new user (home directory and `/bin/bash`)
+
+* `del -u <username>`
+
+  * Delete an existing user (removes home directory)
+
+* `addgroup -g <groupname>`
+
+  * Create a new group
+
+* `delgroup -g <groupname>`
+
+  * Delete an existing group
+
+* `usr_add_grp -u <username> -g <groupname>`
+
+  * Add an existing user to an existing group
+
+* `usr_delete_grp -u <username> -g <groupname>`
+
+  * Remove a user from a group
+
+---
+
+## Examples
 
 ```bash
-# Add a user with default shell (/bin/bash)
+# Create a user named 'alice'
 sudo ./user_mgmt.sh add -u alice
 
-# Add a user with group "devs" and custom shell
-sudo ./user_mgmt.sh add -u bob -g devs -s /bin/zsh
-
-# Delete a user (keep home directory)
+# Delete user 'alice' and her home directory
 sudo ./user_mgmt.sh del -u alice
 
-# Delete a user and their home directory
-sudo ./user_mgmt.sh del -u bob -r
+# Create a group named 'devs'
+sudo ./user_mgmt.sh addgroup -g devs
 
-# Reset a user's password
-sudo ./user_mgmt.sh passwd -u alice
+# Delete group 'devs'
+sudo ./user_mgmt.sh delgroup -g devs
 
-# Lock and unlock a user account
-sudo ./user_mgmt.sh lock -u alice
-sudo ./user_mgmt.sh unlock -u alice
+# Add user 'bob' to group 'devs'
+sudo ./user_mgmt.sh usr_add_grp -u bob -g devs
 
-# Add a user to multiple groups
-sudo ./user_mgmt.sh groups -u alice -g docker,sudo
-
-# Show user info
-sudo ./user_mgmt.sh info -u alice
+# Remove user 'bob' from group 'devs'
+sudo ./user_mgmt.sh usr_delete_grp -u bob -g devs
 ```
 
 ---
+
+## Requirements & Notes
+
+* **Run as root**: the script must be run with `sudo` or as root since it calls `useradd`, `userdel`, `groupadd`, `groupdel`, `usermod`, and `gpasswd`.
+* The script performs basic existence checks for users/groups before acting.
+* Test changes in a non-production VM before running on production systems — deleting users/groups is destructive.
+
+---
+
+If you'd like, I can also:
+
+* Add examples demonstrating error messages and how the script handles them, or
+* Generate a `--dry-run` option to preview changes without applying them.
+
+Tell me which and I will update the README.
