@@ -1,4 +1,4 @@
-## Log Analyzer Script
+## Log Analyzer Script (Bash)
 
 A simple Bash script to parse log files and provide summarized statistics including error, warnings and info messages counts, Top frequent errors and Latest 10 errors
 
