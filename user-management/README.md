@@ -4,13 +4,6 @@ A simple Bash script to manage local Linux users and groups — create/delete us
 
 ---
 
-## Author
-
-**Vaibhav Umbarkar**
-Version: v1.0
-
----
-
 ## Description
 
 This script (`user_mgmt.sh`) provides straightforward commands to perform common user/group administration tasks from the terminal:
@@ -88,12 +81,3 @@ sudo ./user_mgmt.sh usr_delete_grp -u bob -g devs
 * **Run as root**: the script must be run with `sudo` or as root since it calls `useradd`, `userdel`, `groupadd`, `groupdel`, `usermod`, and `gpasswd`.
 * The script performs basic existence checks for users/groups before acting.
 * Test changes in a non-production VM before running on production systems — deleting users/groups is destructive.
-
----
-
-If you'd like, I can also:
-
-* Add examples demonstrating error messages and how the script handles them, or
-* Generate a `--dry-run` option to preview changes without applying them.
-
-Tell me which and I will update the README.
