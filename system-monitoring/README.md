@@ -1,6 +1,6 @@
-# System Monitoring Script
+## System Monitoring Script
 
-A simple Bash script to monitor your system's resources including memory, disk, CPU usage, uptime, and top processes.
+A simple Bash script to monitor your system's resources including memory, disk, CPU usage, uptime, and top processes and active/inactive services
 
 ---
 
@@ -13,6 +13,7 @@ A simple Bash script to monitor your system's resources including memory, disk, 
 - System uptime
 - Top 5 CPU-consuming processes
 - CPU usage percentage
+- Active/Inactive Services
 
 This script is useful for system administrators and developers to get a snapshot of system performance.
 

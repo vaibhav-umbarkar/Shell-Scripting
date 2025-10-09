@@ -3,7 +3,7 @@
 ###############################################
 # Author: Vaibhav Umbarkar
 # Version: v1.0
-# Description: System Monitoring Tool
+# Description: This script displaying memory, disk, CPU usage, uptime, top processes and active/inactive services.
 ###############################################
 
 
@@ -41,7 +41,16 @@ cpu_usage(){
     cpu_used=$((100 - cpu_idle))
 
     echo "5. CPU Usage: $cpu_used%"
-} 
+}
+
+# Function for display active/inactive services
+service_status(){
+    echo "6. Services Status:"
+    echo "Active Services:"
+    service --status-all | grep '+'
+    echo "Inactive Services:"
+    service --status-all | grep '-'
+}
 
 
 echo "------------------------------------------"
@@ -62,3 +71,6 @@ top_processes
 
 # Call CPU Usage Function
 cpu_usage
+
+# Call Service Status Function
+service_status

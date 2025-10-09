@@ -3,7 +3,7 @@
 ##############################################
 # Author: Vaibhav Umbarkar
 # Version: v1.0
-# Description: Parser log files to summarize error, warnnings, and usage stats.
+# Description: Parser log files to summarize error, warnings, and usage stats.
 ##############################################
 
 
