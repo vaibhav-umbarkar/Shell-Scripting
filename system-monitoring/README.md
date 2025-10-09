@@ -4,13 +4,6 @@ A simple Bash script to monitor your system's resources including memory, disk, 
 
 ---
 
-## Author
-
-**Vaibhav Umbarkar**  
-Version: v1.0  
-
----
-
 ## Description
 
 `sys_monitor.sh` provides a quick overview of your system's health and performance:
