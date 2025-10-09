@@ -1,14 +1,6 @@
 # AWS Resources Script
 
-A simple Bash script to **list AWS resources** for a given service and region. This script helps you quickly view your AWS account resources using the AWS CLI.
-
----
-
-## Author
-
-**Vaibhav Umbarkar**  
-Created: 20/09/2025  
-Version: v1.0
+Bash script to **list AWS resources** for a given service and region. This script helps you quickly view your AWS account resources using the AWS CLI.
 
 ---
 
