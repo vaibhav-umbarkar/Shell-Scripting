@@ -1,4 +1,4 @@
-# List of AWS resources (AWS + Bash)
+## List of AWS resources (AWS + Bash)
 
 Bash script to **list AWS resources** for a given service and region. This script helps you quickly view your AWS account resources using the AWS CLI.
 
