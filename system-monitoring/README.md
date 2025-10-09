@@ -1,4 +1,4 @@
-# System Monitoring Script
+## System Monitoring Script
 
 A simple Bash script to monitor your system's resources including memory, disk, CPU usage, uptime, and top processes.
 
