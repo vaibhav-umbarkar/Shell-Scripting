@@ -18,6 +18,14 @@ The script is intended for system administrators and should be run with root pri
 
 ---
 
+## Requirements & Notes
+
+* **Run as root**: the script must be run with `sudo` or as root since it calls `useradd`, `userdel`, `groupadd`, `groupdel`, `usermod`, and `gpasswd`.
+* The script performs basic existence checks for users/groups before acting.
+* Test changes in a non-production VM before running on production systems — deleting users/groups is destructive.
+
+---
+
 ## Usage
 
 ```bash
@@ -73,11 +81,3 @@ sudo ./user_mgmt.sh usr_add_grp -u bob -g devs
 # Remove user 'bob' from group 'devs'
 sudo ./user_mgmt.sh usr_delete_grp -u bob -g devs
 ```
-
----
-
-## Requirements & Notes
-
-* **Run as root**: the script must be run with `sudo` or as root since it calls `useradd`, `userdel`, `groupadd`, `groupdel`, `usermod`, and `gpasswd`.
-* The script performs basic existence checks for users/groups before acting.
-* Test changes in a non-production VM before running on production systems — deleting users/groups is destructive.
