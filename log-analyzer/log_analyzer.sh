@@ -34,27 +34,16 @@ count_log_level(){
     echo "Information: $(grep -i "info" "$LOGFILE" | wc -l)"
 }
 
+# Function for display latest 10 errors
+show_latest_errors(){
+    echo "3. Latest 10 errors"
+    grep -i "error" "$LOGFILE" | tail -10
+}
+
 # Function for display top 10 errors
 show_top_errors(){
     echo "2. Top 10 frequnt errors:"
     grep -i "error" "$LOGFILE" | sort | uniq -c | sort -nr | head -10
-}
-
-# Function for display last 10 errors
-show_last_errors(){
-    echo "3. Last 10 errors"
-    grep -i "error" "$LOGFILE" | tail -10
-}
-
-# Function for display error as per day
-show_error_per_day(){
-    if grep -qE "[0-9]{4}-[0-9]{2}-[0-9]{2}" "$LOGFILE"
-    then
-        echo "4. Errors per day:"
-        grep -i "error" "$LOGFILE" | awk '{print $1}' | sort | uniq -c | sort -nr
-    else
-        echo "Log dose not have standard date YYYY-MM-DD"
-    fi
 }
 
 
@@ -66,8 +55,6 @@ echo "---------------------------------------------------------------"
 count_total_line
 count_log_level
 echo "---------------------------------------------------------------"
+show_latest_errors
+echo "---------------------------------------------------------------"
 show_top_errors
-echo "---------------------------------------------------------------"
-show_error_per_day
-echo "---------------------------------------------------------------"
-show_last_errors
