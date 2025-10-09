@@ -1,13 +1,6 @@
 # Log Analyzer Script
 
-A simple Bash script to parse log files and provide summarized statistics including error counts, warnings, info messages, top frequent errors, and errors per day.
-
----
-
-## Author
-
-**Vaibhav Umbarkar**  
-Version: v1.0  
+This Bash script to parse log files and provide summarized statistics including error counts, warnings, info messages, top frequent errors, and errors per day.
 
 ---
 
